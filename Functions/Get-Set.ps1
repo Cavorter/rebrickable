@@ -27,21 +27,24 @@ function Get-Set {
     #>
     [CmdletBinding()]
     Param(
-        [parameter(Mandatory=$true)]
+        [parameter(Mandatory = $true)]
         [string]$ApiKey,
 
-        [parameter(Mandatory = $true)]
-        [string]$SetNumber
+        [parameter(Mandatory = $true, ValueFromPipeLine = $true)]
+        [string[]]$SetNumber
     )
 
     Begin {
-        [uri]$uri = "$RebrickableRoot/sets/$SetNumber/"
-        Write-Verbose "URI: $uri"
+        $uriTemplate = "{0}/sets/{1}/"
         $authHeader = @{ Authorization = "key $ApiKey" }
     }
 
     Process {
-        $result = Invoke-RestMethod -UseBasicParsing -Uri $uri.AbsoluteUri -Headers $authHeader
-        $result | Write-Output
+        foreach ( $entry in $SetNumber ) {
+            [uri]$uri = $uriTemplate -f $RebrickableRoot, $entry
+            Write-Verbose "URI: $uri"
+            $result = Invoke-RestMethod -UseBasicParsing -Uri $uri.AbsoluteUri -Headers $authHeader
+            $result | Write-Output
+        }
     }
 }

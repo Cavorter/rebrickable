@@ -37,4 +37,18 @@ Describe "Get-Set" {
             $testResult -eq $goodResult | Should -Be $true
         }
     }
+
+    Context "Multiple Sets" {
+        $SetList = @( "1111-1" , "2222-2" )
+
+        It "processes all sets via pipeline" {
+            $SetList | Test-Function -ApiKey $goodApiKey
+            Assert-MockCalled -Scope It -CommandName Invoke-RestMethod -Times $SetList.Count -Exactly
+        }
+
+        It "processes all sets via parameter" {
+            Test-Function -ApiKey $goodApiKey -SetNumber $SetList
+            Assert-MockCalled -Scope It -CommandName Invoke-RestMethod -Times $SetList.Count -Exactly
+        }
+    }
 }

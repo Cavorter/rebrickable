@@ -18,7 +18,7 @@ Describe "$functionName" {
 
     Test-StandardParams
 
-    Context "Happy Path" {
+    Context "Happy Path - Single Set" {
         $testResult = Test-Function @goodParams
 
         It "calls the remote api" {
@@ -29,6 +29,20 @@ Describe "$functionName" {
             $testResult.Count | Should -Be $goodResult.Count
             $testIndex = Get-Random -Minimum 0 -Maximum ( $goodResult.Count - 1 )
             $testResult[$testIndex].id | Should -Be $goodResult[$testIndex].id
+        }
+    }
+
+    Context "Multiple Sets" {
+        $SetList = @( "1111-1" , "2222-2" )
+
+        It "processes all sets via pipeline" {
+            $SetList | Test-Function -ApiKey $goodApiKey
+            Assert-MockCalled -Scope It -CommandName Invoke-RestMethod -Times $SetList.Count -Exactly
+        }
+
+        It "processes all sets via parameter" {
+            Test-Function -ApiKey $goodApiKey -SetNumber $SetList
+            Assert-MockCalled -Scope It -CommandName Invoke-RestMethod -Times $SetList.Count -Exactly
         }
     }
 }

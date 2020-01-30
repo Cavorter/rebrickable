@@ -20,25 +20,26 @@ function Get-SetInventory {
     #>
     [CmdletBinding()]
     Param (
-        [parameter(Mandatory=$true)]
+        [parameter(Mandatory = $true)]
         [string]$ApiKey,
 
-        [parameter(Mandatory = $true)]
-        [string]$SetNumber
+        [parameter(Mandatory = $true, ValueFromPipeLine = $true)]
+        [string[]]$SetNumber
     )
 
     Begin {
         # Setting a default page size for now
         $PageSize = 1000
-
-        [uri]$uri = "$RebrickableRoot/sets/$SetNumber/parts/?page_size=$PageSize"
-        Write-Verbose "URI: $uri"
-
+        $uriTemplate = '{0}/sets/{1}/parts/?page_size={2}'
         $authHeader = @{ Authorization = "key $ApiKey" }
     }
     
     Process {
-        $result = Invoke-RestMethod -UseBasicParsing -Uri $uri.AbsoluteUri -Headers $authHeader
-        $result.results | Write-Output
+        foreach ( $entry in $SetNumber ) {
+            [uri]$uri = $uriTemplate -f $RebrickableRoot,$entry,$PageSize
+            Write-Verbose "URI: $uri"
+            $result = Invoke-RestMethod -UseBasicParsing -Uri $uri.AbsoluteUri -Headers $authHeader
+            $result.results | Write-Output
+        }
     }
 }
