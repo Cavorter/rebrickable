@@ -10,11 +10,11 @@ function Get-SetInventory {
         .PARAMETER ApiKey
             An APIKey generated for your account at https://rebrickable.com/users/<your username>/settings/#api
         .PARAMETER SetNumber
-            The number of a LEGO set to retrieve. Usually in the format of "####-#".
+            The identifier for one or more LEGO sets to retrieve. Usually in the format of "####-#".
         .EXAMPLE
             PS> Get-SetInventory -ApiKey 12345 -SetNumber 1000-1
-
-
+        .EXAMPLE
+            PS> Get-SetInventory -ApiKey 12345 -SetNumber 1111-1,2222-2
         .LINK
             https://rebrickable.com/api/v3/swagger/#!/lego/lego_sets_parts_list
     #>
